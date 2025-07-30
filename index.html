@@ -1,27 +1,42 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>DREAM Scholarship Fund Viewer</title>
-    <style>
-      html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        font-family: Arial, sans-serif;
-        background: #f5f5f5;
-      }
-      iframe {
-        border: none;
-        width: 100%;
-        height: 100vh;
-      }
-    </style>
-  </head>
-  <body>
-    <iframe
-      src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRP-JEk4Rl8tHkl_U8NXxegpsHOuSbSkmtBCCCj54arskY-qzGnPSeW9HU92aYOzC3SeBSa9-Kh86hq/pubhtml?gid=848377533&single=true&widget=true&headers=false"
-      allowfullscreen
-    ></iframe>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <title>DREAM DSF Viewer</title>
+</head>
+<body>
+  <h1>DREAM Scholarship Fund</h1>
+  <div id="result">Loading...</div>
+
+  <script>
+    // Extract the ID from the URL: ?id=12345
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
+
+    fetch("https://raw.githubusercontent.com/paul-dreamprogram/dsf-data/main/QR_Staging.csv")
+      .then((response) => response.text())
+      .then((csv) => {
+        const rows = csv.split("\n").map(row => row.split(","));
+        const headers = rows[0];
+        const dataRows = rows.slice(1);
+
+        const match = dataRows.find(row => row[0].trim() === id);
+
+        if (match) {
+          const record = Object.fromEntries(headers.map((h, i) => [h, match[i]]));
+          document.getElementById("result").innerHTML = `
+            <h2>${record.Name || "DREAMer"}</h2>
+            <p><strong>Chapter:</strong> ${record.Chapter}</p>
+            <p><strong>Amount Raised:</strong> $${record.Amount}</p>
+          `;
+        } else {
+          document.getElementById("result").innerText = "No match found for ID: " + id;
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById("result").innerText = "Error loading data.";
+      });
+  </script>
+</body>
 </html>
