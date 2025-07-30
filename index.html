@@ -25,6 +25,13 @@
         color: red;
         font-weight: bold;
       }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        margin-bottom: 0.5rem;
+      }
     </style>
   </head>
   <body>
@@ -51,10 +58,10 @@
           const headers = rows[0];
           const dataRows = rows.slice(1);
 
-          const match = dataRows.find(row => row.includes(id));
+          const match = dataRows.find(row => row[0] === id); // Assuming ID is the first column
 
           if (!match) {
-            document.getElementById("result").innerHTML = "<p class='error'>No match found for ID " + id + ".</p>";
+            document.getElementById("result").innerHTML = `<p class='error'>No match found for ID: ${id}</p>`;
             return;
           }
 
@@ -66,7 +73,7 @@
 
           document.getElementById("result").innerHTML = html;
         } catch (error) {
-          document.getElementById("result").innerHTML = "<p class='error'>Error loading data.</p>";
+          document.getElementById("result").innerHTML = "<p class='error'>Error loading data. Please try again later.</p>";
           console.error(error);
         }
       }
